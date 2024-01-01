@@ -55,6 +55,7 @@ const applyEvents = (items: HarmonyItem[], events: HarmonyEvent[]): HarmonyItem[
             if (idsToEdit.has(item.itemId)) {
                 let ret = {...item} as HarmonyItem;
                 for (const editEventPayload of eventPayloads) {
+                    if (editEventPayload.itemId !== item.itemId) continue;
                     ret = {
                         ...ret,
                         title: editEventPayload.title ? editEventPayload.title : ret.title,
