@@ -1,0 +1,22 @@
+{
+  "name": "harmony-backend",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "author": "Jeremy Magland",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon -e js,ts --watch src --exec \"yarn build && yarn start\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.6",
+    "@types/pubnub": "^7.4.0",
+    "nodemon": "^3.0.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "pubnub": "^7.4.5"
+  }
+}
