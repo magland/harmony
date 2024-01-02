@@ -54,7 +54,6 @@ const AnnouncementCard: FunctionComponent<AnnouncementCardProps> = ({ width, tit
         }
         onNewDescription(newDescription);
     }, [onNewDescription, description]);
-    console.log('--- widthx', width)
     const W = width - 70;
     return (
         <div style={{position: 'relative', width}}>
