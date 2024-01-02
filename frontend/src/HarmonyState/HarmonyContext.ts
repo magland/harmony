@@ -8,6 +8,8 @@ type HarmonyContextType = {
     addEvents: (events: HarmonyEvent[]) => void
     password: string
     setPassword: (password: string) => void
+    user: string
+    setUser: (user: string) => void
 }
 
 export const HarmonyContext = createContext<HarmonyContextType>({
@@ -16,7 +18,9 @@ export const HarmonyContext = createContext<HarmonyContextType>({
     },
     addEvents: () => {},
     password: '',
-    setPassword: () => {}
+    setPassword: () => {},
+    user: '',
+    setUser: () => {}
 })
 
 export const useHarmony = () => {
@@ -59,11 +63,6 @@ export const useHarmony = () => {
         return state.items.sort((a, b) => b.timestampCreated - a.timestampCreated);
     }, [state.items]);
     return {items: sortedItems, addEvents, addItem, removeItem, editItem};
-}
-
-export const usePassword = () => {
-    const { password, setPassword } = useContext(HarmonyContext);
-    return {password, setPassword};
 }
 
 const randomEventId = () => {

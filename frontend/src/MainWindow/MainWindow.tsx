@@ -21,12 +21,11 @@ const MainWindow: FunctionComponent<MainWindowProps> = () => {
         setDrawerOpen(false);
     }, [setRoute]);
     const drawerWidth = Math.min(width * 2 / 3, 250);
-    console.log('--- drawerOpen', drawerOpen);
     const permanentDrawer = width >= 600;
     const permanentDrawerWidth = permanentDrawer ? drawerWidth : 0;
     return (
         <div>
-            <TopBar showButton={!permanentDrawer} width={width} height={topBarHeight} onToggleDrawer={() => {console.log('--- abc'); setDrawerOpen(open => !open)}} />
+            <TopBar showButton={!permanentDrawer} width={width} height={topBarHeight} onToggleDrawer={() => {setDrawerOpen(open => !open)}} />
             <div style={{position: 'absolute', width: width, height: height - topBarHeight, top: topBarHeight}}>
                 <div style={{position: 'absolute', left: permanentDrawerWidth, width: width - permanentDrawerWidth, height: height - topBarHeight, top: topBarHeight}}>
                     {

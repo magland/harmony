@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useMemo } from "react";
-import { useHarmony } from "../HarmonyState/HarmonyContext"
+import { useCallback, useContext, useMemo } from "react";
+import { HarmonyContext, useHarmony } from "../HarmonyState/HarmonyContext"
 import { HarmonyItem } from "../types";
 
 const useAnnouncements = () => {
+    const {user} = useContext(HarmonyContext);
     const {items, addItem, removeItem, editItem} = useHarmony();
     const announcements = useMemo(() => {
         return items.filter(item => item.itemType === 'announcement');
@@ -12,13 +13,13 @@ const useAnnouncements = () => {
         const item: HarmonyItem = {
             itemType: 'announcement',
             itemId: randomItemId(),
-            userName: 'anonymous',
+            userName: user,
             timestampCreated: Date.now(),
             title,
             meta: {}
         };
         addItem(item);
-    }, [addItem]);
+    }, [addItem, user]);
     const removeAnnouncement = useCallback((itemId: string) => {
         removeItem(itemId);
     }, [removeItem]);

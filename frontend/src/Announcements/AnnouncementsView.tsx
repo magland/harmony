@@ -1,9 +1,10 @@
-import { FunctionComponent, useCallback, useState } from "react"
+import { FunctionComponent, useCallback, useContext, useMemo, useState } from "react"
 import useAnnouncements from "./useAnnouncements"
 import { HarmonyItem } from "../types";
 import Card from '@mui/material/Card';
 import { Button, CardActions, CardContent, CardHeader, IconButton, TextField, Typography } from "@mui/material";
 import { Close, Edit } from "@mui/icons-material";
+import { HarmonyContext } from "../HarmonyState/HarmonyContext";
 
 type AnnouncementsViewProps = {
     width: number;
@@ -75,28 +76,35 @@ const AnnouncementView: FunctionComponent<AnnouncementViewProps> = ({ announceme
     const description = announcement.meta.description || '';
     const title = announcement.title || '';
     const [editing, setEditing] = useState(false);
+    const {user} = useContext(HarmonyContext);
     const handleEditTitle = useCallback((newTitle: string) => {
         onEdit({title: newTitle});
     }, [onEdit]);
     const handleEditDescription = useCallback((newDescription: string) => {
         onEdit({description: newDescription});
     }, [onEdit]);
+    const isEditable = useMemo(() => {
+        return ['anonymous', user].includes(announcement.userName)
+    }, [announcement.userName, user]);
     return (
-        <Card sx={{ minWidth: width, maxWidth: width }}>
+        <Card sx={{ minWidth: width - 20, maxWidth: width - 20 }}>
             <CardHeader
                 title={title}
                 action={
-                    <IconButton aria-label="delete" onClick={onDelete}>
-                        <Close />
-                    </IconButton>
+                    isEditable && (
+                        <IconButton aria-label="delete" onClick={onDelete}>
+                            <Close />
+                        </IconButton>
+                    )
                 }
             />
             {
-                (description || editing) && (
+                (
                     <CardContent>
                         <>
                             <Typography color="text.secondary">
-                                {description}
+                                {description && <>{description}<br /></>}
+                                <span style={{color: 'darkblue'}}>{announcement.userName}</span>
                             </Typography>
                         </>
                         {
@@ -110,11 +118,13 @@ const AnnouncementView: FunctionComponent<AnnouncementViewProps> = ({ announceme
                     </CardContent>
                 )
             }
-            <CardActions disableSpacing>
-                <IconButton aria-label="edit" onClick={() => setEditing(editing => !editing)}>
-                    <Edit />
-                </IconButton>
-            </CardActions>
+            {isEditable && (
+                <CardActions disableSpacing>
+                    <IconButton aria-label="edit" onClick={() => setEditing(editing => !editing)}>
+                        <Edit />
+                    </IconButton>
+                </CardActions>
+            )}
         </Card>
     )
     // return (
@@ -135,13 +145,20 @@ const AddAnnouncementControl: FunctionComponent<AddAnnouncementControlProps> = (
     const addEnabled = newTitle.length > 0;
     const componentHeight = 50;
     return (
-        <div style={{display: 'flex', alignItems: 'center', paddingBottom: 15}}>
+        <div style={{display: 'flex', alignItems: 'center', paddingBottom: 15, marginRight: 25}}>
             <TextField
                 label="New announcement"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
                 style={{flexGrow: 1, height: componentHeight}}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        addAnnouncement(newTitle);
+                        setNewTitle('');
+                    }
+                }}
             />
+            &nbsp;
             <Button
                 variant="contained"
                 onClick={() => {

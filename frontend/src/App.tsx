@@ -23,6 +23,7 @@ const pubnubBackend = new PubNub({
 
 function App() {
   const [password, setPassword] = useState<string>('');
+  const [user, setUser] = useState<string>('');
   const [harmonyState, harmonyStateDispatch] = useReducer(
     harmonyStateReducer,
     defaultHarmonyState
@@ -33,6 +34,9 @@ function App() {
     if (!password) {
       return;
     }
+    if (!user) {
+      return;
+    }
     if (!initializedListener) {
       return;
     }
@@ -40,7 +44,7 @@ function App() {
       type: "frontend:getAllEvents",
     };
     publishMessage(msg, password);
-  }, [password, initializedListener]);
+  }, [password, user, initializedListener]);
 
   useEffect(() => {
     let canceled = false;
@@ -82,13 +86,16 @@ function App() {
       if (!password) {
         return;
       }
+      if (!user) {
+        return;
+      }
       const msg: HarmonyMessageFromFrontend = {
         type: "frontend:addEvents",
         events,
       };
       publishMessage(msg, password);
     },
-    [password]
+    [password, user]
   );
 
   useEffect(() => {
@@ -98,9 +105,34 @@ function App() {
   }, [password]);
 
   useEffect(() => {
-    const pw = localStorage.getItem("harmony-password");
+    if (user) {
+      localStorage.setItem("harmony-user", user);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    let pw = localStorage.getItem("harmony-password");
+    if (!pw) {
+      const newPassword = prompt("Enter password");
+      if (newPassword) {
+        pw = newPassword;
+      }
+    }
     if (pw) {
+      localStorage.setItem("harmony-password", pw);
       setPassword(pw);
+    }
+
+    let u = localStorage.getItem("harmony-user");
+    if (!u) {
+      const newUser = prompt("Enter user name");
+      if (newUser) {
+        localStorage.setItem("harmony-user", newUser);
+        u = newUser;
+      }
+    }
+    if (u) {
+      setUser(u);
     }
   }, []);
 
@@ -108,7 +140,7 @@ function App() {
 
   return (
     <HarmonyContext.Provider
-      value={{ state: harmonyState, addEvents: handleAddEvents, password, setPassword }}
+      value={{ state: harmonyState, addEvents: handleAddEvents, password, setPassword, user, setUser }}
     >
       <RouteContext.Provider value={{ route, setRoute }}>
         <MainWindow />
