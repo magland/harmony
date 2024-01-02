@@ -1,6 +1,4 @@
 import { Hyperlink } from "@fi-sci/misc";
-import { Close } from "@mui/icons-material";
-import { Button, IconButton } from "@mui/material";
 import { CSSProperties, FunctionComponent, useCallback, useState } from "react";
 
 type AnnouncementCardProps = {
