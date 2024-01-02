@@ -1,10 +1,9 @@
-import { FunctionComponent, useCallback, useContext, useMemo, useState } from "react"
-import useAnnouncements from "./useAnnouncements"
-import { HarmonyItem } from "../types";
-import Card from '@mui/material/Card';
-import { Button, CardActions, CardContent, CardHeader, IconButton, TextField, Typography } from "@mui/material";
-import { Close, Edit } from "@mui/icons-material";
+import { Button, TextField, styled } from "@mui/material";
+import { FunctionComponent, useCallback, useContext, useMemo, useState } from "react";
 import { HarmonyContext } from "../HarmonyState/HarmonyContext";
+import { HarmonyItem } from "../types";
+import useAnnouncements from "./useAnnouncements";
+import AnnouncementCard from "./AnnouncementCard";
 
 type AnnouncementsViewProps = {
     width: number;
@@ -39,7 +38,7 @@ const AnnouncementsView: FunctionComponent<AnnouncementsViewProps> = ({width, he
         if (x.title) {
             editAnnouncement(itemId, {title: x.title});
         }
-        else if (x.description) {
+        else if (x.description !== undefined) {
             editAnnouncement(itemId, {meta: {description: x.description}})
         }
     }, [editAnnouncement]);
@@ -73,9 +72,6 @@ type AnnouncementViewProps = {
 }
 
 const AnnouncementView: FunctionComponent<AnnouncementViewProps> = ({ announcement, width, onDelete, onEdit }) => {
-    const description = announcement.meta.description || '';
-    const title = announcement.title || '';
-    const [editing, setEditing] = useState(false);
     const {user} = useContext(HarmonyContext);
     const handleEditTitle = useCallback((newTitle: string) => {
         onEdit({title: newTitle});
@@ -87,51 +83,58 @@ const AnnouncementView: FunctionComponent<AnnouncementViewProps> = ({ announceme
         return ['anonymous', user].includes(announcement.userName)
     }, [announcement.userName, user]);
     return (
-        <Card sx={{ minWidth: width - 20, maxWidth: width - 20 }}>
-            <CardHeader
-                title={title}
-                action={
-                    isEditable && (
-                        <IconButton aria-label="delete" onClick={onDelete}>
-                            <Close />
-                        </IconButton>
-                    )
-                }
-            />
-            {
-                (
-                    <CardContent>
-                        <>
-                            <Typography color="text.secondary">
-                                {description && <>{description}<br /></>}
-                                <span style={{color: 'darkblue'}}>{announcement.userName}</span>
-                            </Typography>
-                        </>
-                        {
-                            editing && (
-                                <>
-                                    <EditTitleComponent width={width} onNewTitle={handleEditTitle} />
-                                    <EditDescriptionComponent width={width} onNewDescription={handleEditDescription} />
-                                </>
-                            )
-                        }
-                    </CardContent>
-                )
-            }
-            {isEditable && (
-                <CardActions disableSpacing>
-                    <IconButton aria-label="edit" onClick={() => setEditing(editing => !editing)}>
-                        <Edit />
-                    </IconButton>
-                </CardActions>
-            )}
-        </Card>
+        <AnnouncementCard
+            width={width}
+            title={announcement.title || ''}
+            description={announcement.meta.description || ''}
+            author={announcement.userName}
+            editable={isEditable}
+            onDelete={onDelete}
+            onNewTitle={handleEditTitle}
+            onNewDescription={handleEditDescription}
+            isSelf={announcement.userName === user}
+        />
     )
     // return (
-    //     <div style={{position: 'relative', width: 300, height: 100, overflow: 'hidden', border: 'solid 1px brown', margin: 10, padding: 10}}>
-    //         <h2>{announcement.title}</h2>
-    //         <p>{description}</p>
-    //     </div>
+    //     <Card sx={{ minWidth: width - 20, maxWidth: width - 20 }}>
+    //         <CardHeader
+    //             title={title}
+    //             action={
+    //                 isEditable && (
+    //                     <IconButton aria-label="delete" onClick={onDelete}>
+    //                         <Close />
+    //                     </IconButton>
+    //                 )
+    //             }
+    //         />
+    //         {
+    //             (
+    //                 <CardContent>
+    //                     <>
+    //                         <Typography color="text.secondary">
+    //                             {description && <>{description}<br /></>}
+    //                             <span style={{color: 'darkblue'}}>{announcement.userName}</span>
+    //                         </Typography>
+    //                     </>
+    //                     {
+    //                         editing && (
+    //                             <>
+    //                                 <EditTitleComponent width={width} onNewTitle={handleEditTitle} />
+    //                                 <EditDescriptionComponent width={width} onNewDescription={handleEditDescription} />
+    //                             </>
+    //                         )
+    //                     }
+    //                 </CardContent>
+    //             )
+    //         }
+    //         {isEditable && (
+    //             <CardActions disableSpacing>
+    //                 <IconButton aria-label="edit" onClick={() => setEditing(editing => !editing)}>
+    //                     <Edit />
+    //                 </IconButton>
+    //             </CardActions>
+    //         )}
+    //     </Card>
     // )
 }
 
@@ -139,14 +142,21 @@ type AddAnnouncementControlProps = {
     // none
 }
 
+const TextFieldWrapper = styled(TextField)`
+  fieldset {
+    border-radius: 20px;
+    height: 53px;
+  }
+`;
+
 const AddAnnouncementControl: FunctionComponent<AddAnnouncementControlProps> = () => {
     const { addAnnouncement } = useAnnouncements();
     const [newTitle, setNewTitle] = useState('');
     const addEnabled = newTitle.length > 0;
     const componentHeight = 50;
     return (
-        <div style={{display: 'flex', alignItems: 'center', paddingBottom: 15, marginRight: 25}}>
-            <TextField
+        <div style={{display: 'flex', alignItems: 'center', paddingLeft: 10, paddingBottom: 15, marginRight: 25}}>
+            <TextFieldWrapper
                 label="New announcement"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
