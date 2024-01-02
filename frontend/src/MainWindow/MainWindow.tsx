@@ -13,6 +13,7 @@ type MainWindowProps = {
 
 const MainWindow: FunctionComponent<MainWindowProps> = () => {
     const {width, height} = useWindowDimensions();
+    console.log('--- width', width)
     const [drawerOpen, setDrawerOpen] = useState(false);
     const {route, setRoute} = useRoute();
     const topBarHeight = 20;

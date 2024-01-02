@@ -19,10 +19,12 @@ const messageBubbleStyle: CSSProperties = {
     padding: 5,
     color: 'white',
     fontSize: 11,
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingLeft: 10,
+    paddingRight: 10,
     paddingTop: 8,
-    paddingBottom: 8
+    paddingBottom: 8,
+    marginLeft: 10,
+    marginRight: 10
 }
 
 const messageBubbleSelfStyle: CSSProperties = {
@@ -37,7 +39,7 @@ const authorStyle: CSSProperties = {
 
 const AnnouncementCard: FunctionComponent<AnnouncementCardProps> = ({ width, title, description, author, editable, onDelete, onNewTitle, onNewDescription, isSelf }) => {
     const [editing, setEditing] = useState(false);
-    const rightButtonWidth = 40;
+    const rightButtonWidth = 30;
     const handleEditTitle = useCallback(() => {
         const newTitle = prompt('Enter new title', title || '');
         if (!newTitle) {
@@ -52,6 +54,8 @@ const AnnouncementCard: FunctionComponent<AnnouncementCardProps> = ({ width, tit
         }
         onNewDescription(newDescription);
     }, [onNewDescription, description]);
+    console.log('--- widthx', width)
+    const W = width - 70;
     return (
         <div style={{position: 'relative', width}}>
             <div
@@ -60,7 +64,7 @@ const AnnouncementCard: FunctionComponent<AnnouncementCardProps> = ({ width, tit
                 {author}
             </div>
             <div
-                style={{...messageBubbleStyle, ...(isSelf ? messageBubbleSelfStyle: {}), position: 'relative', left: 5, width: width - 10 - 30}}
+                style={{...messageBubbleStyle, ...(isSelf ? messageBubbleSelfStyle: {}), position: 'relative', left: 0, width: W}}
             >
 
                 {title}
@@ -72,7 +76,7 @@ const AnnouncementCard: FunctionComponent<AnnouncementCardProps> = ({ width, tit
                     )
                 }
                 {editable && (
-                    <div style={{position: 'absolute', fontSize: 15, top: 0, left: width - rightButtonWidth, width: rightButtonWidth}} onClick={() => setEditing(e => !e)}>
+                    <div style={{position: 'absolute', fontSize: 15, top: 0, left: W + 20 - rightButtonWidth, width: rightButtonWidth}} onClick={() => setEditing(e => !e)}>
                         ...
                     </div>
                 )}
